@@ -1,9 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const authController = require("../controllers/authController");
 const { register, login, logout, refreshToken } = require("../controllers/authController");
 const userAuth = require("../middleware/authMiddleware");
-const refreshTokenMiddleware = require("../middleware/refreshMiddleware");
+
 
 router.post("/signup", register);
 router.post("/signin", login);
