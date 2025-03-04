@@ -11,7 +11,7 @@ exports.createBudget = async (userId, budgetData) => {
     userId,
     category,
     amount,
-    currency: currency || "USD", // Default to USD
+    currency: currency || "LKR", // Default to LKR
     startDate,
     endDate,
   });

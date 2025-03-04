@@ -13,7 +13,7 @@ const authenticateUser = (roles = []) => {
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
       if (err) return res.status(401).json({ message: "Invalid or expired token" });
 
-      console.log("Decoded Token:", decoded); // ✅ Debug log
+      
 
       req.user = decoded; // Attach user details to request
 
