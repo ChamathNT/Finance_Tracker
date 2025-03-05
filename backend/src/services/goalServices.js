@@ -1,4 +1,5 @@
 const Goal = require("../models/goals");
+const Notification = require("../models/notification"); // Assuming you have a Notification model
 
 class GoalService {
   // Create a new goal
@@ -52,6 +53,30 @@ class GoalService {
       const goal = await Goal.findOneAndDelete({ _id: goalId, userId });
       if (!goal) throw new Error("Goal not found or unauthorized");
       return { message: "Goal deleted successfully" };
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  // Increase current amount in goal based on autoSavePercentage from income transactions
+  static async increaseGoalAmount(userId, amount) {
+    try {
+      const goals = await Goal.find({ userId, autoSavePercentage: { $gt: 0 } });
+
+      for (const goal of goals) {
+        const saveAmount = (goal.autoSavePercentage / 100) * amount;
+        goal.currentAmount += saveAmount;
+        await goal.save();
+
+        // Notify when goal is completed
+        if (goal.currentAmount >= goal.targetAmount) {
+          await Notification.create({
+            userId,
+            message: `🎉 Goal "${goal.title}" has been completed!`,
+            type: "goal_update",
+          });
+        }
+      }
     } catch (error) {
       throw new Error(error.message);
     }
