@@ -4,6 +4,9 @@ const dotenv = require('dotenv');
 const cookieParser = require("cookie-parser");
 const dbConnect = require('../src/db-config');
 const routes = require('./routes/baseRoute');
+const { processRecurringTransactions } = require("./utils/recurrenceUtil");
+
+
 // const processRecurringTransactions = require('./services/transactionService/recuringTransactions');
 // const swaggerUi  =require('swagger-ui-express');
 // const swaggerDocument = require('./swagger.json') ;
@@ -40,3 +43,5 @@ app.listen(port, () => {
   console.log(`listening on port ${port} & navigate to http://localhost:${port}/api-docs/ for API documentation`);
   dbConnect();
 });
+
+processRecurringTransactions();
