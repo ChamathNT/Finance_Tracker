@@ -25,7 +25,6 @@ class TransactionController {
         const tagArray = tags.split(",").map(tag => tag.trim());
         filter.tags = { $elemMatch: { $regex: new RegExp(tagArray.join("|"), "i") } };
       }
-      
 
       const transactions = await TransactionService.getTransactions(userId, filter, currency);
       res.status(200).json(transactions);

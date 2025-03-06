@@ -6,25 +6,34 @@ const { convertCurrency } = require("../utils/currencyUtil");
 
 class TransactionService {
   // Create a transaction with currency support
-  static async createTransaction(userId, { type, amount, category, tags, currency = "LKR" }) {
+  static async createTransaction(userId, { type, amount, currency = "LKR", category, tags }) {
     try {
+      // Convert amount to LKR before saving
+      let amountInLKR = amount;
+
+      if (currency !== "LKR") {
+        amountInLKR = await convertCurrency(amount, currency, "LKR");
+      }
+
       const transaction = new Transaction({
         userId,
         type,
-        amount,
+        amount: amountInLKR, // Save converted amount
+        currency: "LKR", // Always store in LKR
         category,
         tags,
-        currency, // Store currency
       });
 
       await transaction.save();
 
+      // Handle Budget Check (Only for expenses)
       if (type === "expense") {
         await this.checkBudgetLimit(userId, category);
       }
 
+      // Handle Goal Auto-Save (Only for income)
       if (type === "income") {
-        await this.autoSaveToGoal(userId, amount);
+        await this.autoSaveToGoal(userId, amountInLKR);
       }
 
       return transaction;
@@ -36,21 +45,13 @@ class TransactionService {
   // Get transactions with currency conversion support
   static async getTransactions(userId, filters, targetCurrency = "LKR") {
     try {
-      const transactions = await Transaction.find({ userId, ...filters });
+      const transactions = await Transaction.find(filters);
 
-      if (targetCurrency) {
-        // Convert each transaction amount to the requested currency
-        const convertedTransactions = await Promise.all(
-          transactions.map(async (transaction) => {
-            if (transaction.currency !== targetCurrency) {
-              const convertedAmount = await convertCurrency(transaction.amount, transaction.currency, targetCurrency);
-              return { ...transaction.toObject(), amount: convertedAmount, currency: targetCurrency };
-            }
-            return transaction.toObject();
-          })
-        );
-
-        return convertedTransactions;
+      if (targetCurrency && targetCurrency !== "LKR") {
+        for (let transaction of transactions) {
+          transaction.amount = await convertCurrency(transaction.amount, "LKR", targetCurrency);
+          transaction.currency = targetCurrency;
+        }
       }
 
       return transactions;
