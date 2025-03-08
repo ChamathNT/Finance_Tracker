@@ -8,6 +8,7 @@ router.use('/goals', require('./goalRoutes'));
 router.use('/transactions', require('./transactionRoutes'));
 router.use('/report', require('./reportRoutes'));
 router.use('/dash', require('./dashboardRoutes'));
+router.use('/admin', require('./adminOnlyRoutes'));
 
 
 
