@@ -89,23 +89,30 @@ class TransactionService {
     }
   }
 
-  // Check Budget Limit
+  //  Budget Limit Check
+
   static async checkBudgetLimit(userId, category) {
     const mongoose = require("mongoose");
 
     const budget = await Budget.findOne({
       userId: new mongoose.Types.ObjectId(userId),
-      category: category.toLowerCase(),
+      category: { $regex: new RegExp("^" + category + "$", "i") }, // Case-insensitive matching
     });
 
-    if (!budget || !budget.amount) return;
+    if (!budget || !budget.amount) return; // No budget found, exit
 
     const totalExpenses = await Transaction.aggregate([
-      { $match: { userId: new mongoose.Types.ObjectId(userId), category, type: "expense" } },
-      { $group: { _id: null, total: { $sum: "$amount" } } },
+      {
+        $match: {
+          userId: new mongoose.Types.ObjectId(userId),
+          category: { $regex: new RegExp("^" + category + "$", "i") }, // Case-insensitive matching
+          type: "expense"
+        }
+      },
+      { $group: { _id: null, total: { $sum: "$amount" } } }
     ]);
 
-    const totalSpent = totalExpenses.length ? totalExpenses[0].total : 0;
+    const totalSpent = totalExpenses.length > 0 ? totalExpenses[0].total : 0;
 
     if (totalSpent > budget.amount) {
       await Notification.create({
@@ -115,6 +122,7 @@ class TransactionService {
       });
     }
   }
+
 
   // Auto-Save to Goals
   static async autoSaveToGoal(userId, incomeAmount) {
@@ -158,7 +166,7 @@ class TransactionService {
       }
 
       console.log(`✅ Processing recurring transaction: ${transaction._id}`);
-      
+
       // Create a new transaction
       const newTransaction = new Transaction({
         userId: transaction.userId,
