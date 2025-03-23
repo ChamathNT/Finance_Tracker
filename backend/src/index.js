@@ -40,7 +40,7 @@ app.use('/api', routes );
 
 
 app.listen(port, () => {
-  console.log(`listening on port ${port} & navigate to http://localhost:${port}/api-docs/ for API documentation`);
+  // console.log(`listening on port ${port} & navigate to http://localhost:${port}/api-docs/ for API documentation`);
   dbConnect();
 });
 

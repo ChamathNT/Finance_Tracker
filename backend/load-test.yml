@@ -1,0 +1,38 @@
+config:
+  target: "http://localhost:5000"
+  phases:
+    - duration: 60
+      arrivalRate: 5  # 5 requests per second
+  variables:
+    email: "cn@gmail.com"
+    password: "abcd12"
+
+scenarios:
+  - flow:
+      - post:
+          url: "/api/user/signin"
+          json:
+            email: "{{ email }}"
+            password: "{{ password }}"
+          capture:
+            - json: "$.accessToken" # Capture the access token
+              as: "authToken"
+          log: true  # Debugging (prints response)
+      
+      - get:
+          url: "/api/transactions/gettransactions"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          log: true  # Debugging (prints response)
+
+
+      - post:
+          url: "/api/transactions/createtransaction"
+          json:
+            type: "expense"
+            amount: 1000
+            currency: "LKR"
+            category: "Food"
+            
+          headers:
+            Authorization: "Bearer {{ authToken }}"

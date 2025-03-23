@@ -2,12 +2,12 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const User = require("../models/user");
 
-// Generate Access Token (Expires in 15 minutes)
+// Generate Access Token (Expires in 45 minutes)
 const generateAccessToken = (user) => {
   return jwt.sign(
     { userId: user._id, role: user.role }, // ✅ Include role in token
     process.env.ACCESS_TOKEN_SECRET,
-    { expiresIn: "15m" }
+    { expiresIn: "45m" }
   );
 };
 
