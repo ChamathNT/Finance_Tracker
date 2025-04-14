@@ -15,15 +15,15 @@ while ensuring secure authentication and efficient data management.
 ```bash
 git clone https://github.com/SE1020-IT2070-OOP-DSA-25/project-ChamathNT.git
 ```
-### **2️⃣ navigate to the server**
+### **2️⃣ Navigate to the Server**
 ```bash
 cd project-project-ChamathNT/server
 ```
-### **3️⃣ install dependancies**
+### **3️⃣ Install Dependancies**
 ```bash
 npm install
 ```
-### **4️⃣ setup environment variables**
+### **4️⃣ Setup Environment Variables**
 ```bash
 # Server Configuration
 PORT=5000
@@ -36,7 +36,7 @@ ACCESS_TOKEN_SECRET=access_token_secret
 REFRESH_TOKEN_SECRET=refresh_token_secret
 
 ```
-### **5️⃣ run the server**
+### **5️⃣ Run the Server**
 ```bash
 npm start
 ```
